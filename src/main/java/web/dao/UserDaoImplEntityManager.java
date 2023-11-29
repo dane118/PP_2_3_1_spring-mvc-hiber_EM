@@ -1,15 +1,15 @@
 package web.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import web.model.User;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
 public class UserDaoImplEntityManager implements UserDao {
-    @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Override
@@ -24,17 +24,21 @@ public class UserDaoImplEntityManager implements UserDao {
 
     @Override
     public void addOrUpdateUser(User user) {
+        entityManager.persist(entityManager.contains(user) ? user : entityManager.merge(user));
 //        sessionFactory.getCurrentSession().saveOrUpdate(user);
     }
 
     @Override
     public User getById(Long id) {
+        return  entityManager.find(User.class, id);
 //        User user = sessionFactory.getCurrentSession().get(User.class, id);
-        return null;
+//        return null;
     }
 
     @Override
     public void deleteUser(User user) {
+        entityManager.remove(entityManager.contains(user) ? user : entityManager.merge(user));
+//        entityManager.remove(user);
 //        sessionFactory.getCurrentSession().delete(user);
     }
 }
